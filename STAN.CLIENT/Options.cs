@@ -22,21 +22,16 @@ namespace STAN.Client
 
         internal StanOptions() { }
 
-        private string deepCopy(string value)
-        {
-            if (value == null)
-                return null;
-
-            return string.Copy(value);
-        }
-
         internal StanOptions(StanOptions options)
         {
+            if (options == null)
+                return;
+
             ackTimeout = options.ackTimeout;
-            NatsURL = deepCopy(options.NatsURL);
+            NatsURL = options.NatsURL;
             ConnectTimeout = options.ConnectTimeout;
             PubAckWait = options.PubAckWait;
-            DiscoverPrefix = deepCopy(options.DiscoverPrefix);
+            DiscoverPrefix = options.DiscoverPrefix;
             MaxPubAcksInFlight = options.MaxPubAcksInFlight;
             NatsConn = options.natsConn;
         }
@@ -44,7 +39,7 @@ namespace STAN.Client
         /// <summary>
         /// Gets or sets the url to connect to a NATS server.
         /// </summary>
-	    public string NatsURL
+        public string NatsURL
         {
             get 
             {
@@ -52,10 +47,10 @@ namespace STAN.Client
             }
             set
             {
-                if (natsURL == null)
-                    natsURL = StanConsts.DefaultNatsURL;
-
-                natsURL = value;
+                if (value != null)
+                {
+                    natsURL = value;
+                }
             }
         }
 
@@ -83,7 +78,7 @@ namespace STAN.Client
             set
             {
                 if (value <= 0)
-                    throw new ArgumentOutOfRangeException("value", "Value must be greater than zero.");
+                    throw new ArgumentOutOfRangeException("value", value, "ConnectTimeout must be greater than zero.");
 
                 connectTimeout = value;
             }
@@ -102,7 +97,7 @@ namespace STAN.Client
             set
             {
                 if (value <= 0)
-                    throw new ArgumentOutOfRangeException("value", "Value must be greater than zero.");
+                    throw new ArgumentOutOfRangeException("value", value, "PubAckWait must be greater than zero.");
 
                 ackTimeout = value;
             }
@@ -121,7 +116,7 @@ namespace STAN.Client
             set
             {
                 if (value == null)
-                    throw new ArgumentNullException("value", "Value cannot be null.");
+                    throw new ArgumentNullException("value", "DiscoverPrefix cannot be null.");
 
                 discoverPrefix = value;
             }
@@ -140,7 +135,7 @@ namespace STAN.Client
             set
             {
                 if (value <= 0)
-                    throw new ArgumentOutOfRangeException("value", "Value must be greater than zero.");
+                    throw new ArgumentOutOfRangeException("value", value, "MaxPubAcksInFlight must be greater than zero.");
 
                 maxPubAcksInflight = value;
             }
