@@ -30,28 +30,15 @@ namespace STAN.Client
             if (opts == null)
                 return;
 
-            this.ackWait = opts.ackWait;
-
-            if (opts.durableName != null)
-            {
-                this.durableName = new String(opts.durableName.ToCharArray());
-            }
-
+            ackWait = opts.ackWait;
+            durableName = opts.durableName;
             manualAcks = opts.manualAcks;
             maxInFlight = opts.maxInFlight;
             startAt = opts.startAt;
             startSequence = opts.startSequence;
             useStartTimeDelta = opts.useStartTimeDelta;
-
-            if (opts.startTime != null)
-            {
-                startTime = opts.startTime;
-            }
-
-            if (opts.startTimeDelta != null)
-            {
-                startTimeDelta = opts.startTimeDelta;
-            }
+            startTime = opts.startTime;
+            startTimeDelta = opts.startTimeDelta;
         }
 
         /// <summary>
@@ -66,14 +53,14 @@ namespace STAN.Client
         /// <summary>
         /// Controls the number of messages the cluster will have inflight without an ACK.
         /// </summary>
-	    public int MaxInflight
+        public int MaxInflight
         {
             get { return maxInFlight; }
             set
             {
                 if (maxInFlight < 0)
                 {
-                    throw new ArgumentException("value must be > 0");
+                    throw new ArgumentOutOfRangeException("value", value, "MaxInflight must be > 0");
                 }
                 maxInFlight = value;
             }
@@ -85,14 +72,15 @@ namespace STAN.Client
         /// <remarks>
         /// The value must be at least one second.
         /// </remarks>
-	    public int AckWait
+        public int AckWait
         {
             get { return ackWait; }
             set
             {
                 if (value < 1000)
-                    throw new ArgumentException("value cannot be less than 1000");
-                        
+                {
+                    throw new ArgumentOutOfRangeException("value", value, "AckWait cannot be less than 1000");
+                }
                 ackWait = value;
             }
         }
@@ -100,7 +88,7 @@ namespace STAN.Client
         /// <summary>
         /// Controls the time the cluster will wait for an ACK for a given message.
         /// </summary>
-	    public bool ManualAcks
+        public bool ManualAcks
         {
             get { return manualAcks; }
             set { manualAcks = value; }
@@ -110,7 +98,7 @@ namespace STAN.Client
         /// Optional start sequence number.
         /// </summary>
         /// <param name="sequence"></param>
-	    public void StartAt(ulong sequence)
+        public void StartAt(ulong sequence)
         {
             startAt = StartPosition.SequenceStart;
             startSequence = sequence;    
@@ -120,7 +108,7 @@ namespace STAN.Client
         /// Optional start time.
         /// </summary>
         /// <param name="time"></param>
-	    public void StartAt(DateTime time)
+        public void StartAt(DateTime time)
         {
             useStartTimeDelta = false;
             startTime = time;
@@ -134,7 +122,7 @@ namespace STAN.Client
         public void StartAt(TimeSpan duration)
         {
             useStartTimeDelta = true;
-            startTimeDelta = duration;
+            startTimeDelta = duration.Duration();
             startAt = StartPosition.TimeDeltaStart;
         }
 
@@ -143,7 +131,7 @@ namespace STAN.Client
         /// </summary>
         public void StartWithLastReceived()
         {
-		    startAt = StartPosition.LastReceived;
+            startAt = StartPosition.LastReceived;
         }
 
         /// <summary>
